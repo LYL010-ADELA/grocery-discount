@@ -37,8 +37,11 @@
   };
 
   /* ---------- helpers ---------- */
+  // NFKD does not split the œ/æ ligatures, and labels spell them out:
+  // a shelf says "Boeuf" where a dictionary says "bœuf".
   const fold = (s) => (s || "").toLowerCase()
     .replace(/ä/g, "a").replace(/ö/g, "o").replace(/ü/g, "u").replace(/ß/g, "ss")
+    .replace(/œ/g, "oe").replace(/æ/g, "ae")
     .normalize("NFKD").replace(/[̀-ͯ]/g, "");
 
   const chf = (n) => (typeof n === "number" ? n.toFixed(2) : "");
@@ -46,38 +49,90 @@
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g,
     (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
+  // The product's own label. Category and store live in a separate field so a
+  // search for "bread" ranks a loaf above everything else in Bread & Bakery.
   function haystack(o) {
-    if (!o._hay) o._hay = fold(`${o.name} ${o.subtitle || ""} ${o.category} ${o.retailer}`);
+    if (!o._hay) o._hay = fold(`${o.name} ${o.subtitle || ""}`);
     return o._hay;
   }
 
-  const watchHits = (o) =>
-    state.watch.length > 0 && state.watch.some((w) => haystack(o).includes(fold(w)));
-
-  const reCache = new Map();
-  function boundaryRe(term) {
-    let re = reCache.get(term);
-    if (!re) {
-      const e = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      // Matches when the term starts a word or ends one.
-      re = new RegExp(`(?:^|[^a-z0-9])${e}|${e}(?:$|[^a-z0-9])`);
-      reCache.set(term, re);
-    }
-    return re;
+  function haystackMeta(o) {
+    if (!o._hayMeta) o._hayMeta = fold(`${o.category} ${o.retailer}`);
+    return o._hayMeta;
   }
 
-  // 2 = every term sits on a word boundary ("cola" in "Coca-Cola")
-  // 1 = every term is present, but buried inside a word. German compounds
-  //     need this ("schoko" inside "Tafelschokolade"), but it is also how
-  //     "cola" finds "chocolat", so these rank below the clean matches.
-  // 0 = not a match
+  // The other languages' words for what this product is, so "bread" reaches
+  // "Kartoffel-Nuss-Brot" and "Pain au Maïs".
+  function haystackAlias(o) {
+    if (!o._hayAlias) o._hayAlias = fold((o.search_terms || []).join(" "));
+    return o._hayAlias;
+  }
+
+  // A watchlist keyword should behave like a search term: label first, but
+  // "salmon" must still find "Lachs".
+  function watchable(o) {
+    if (!o._watch) {
+      const a = haystackAlias(o);
+      o._watch = a ? `${haystack(o)} ${a}` : haystack(o);
+    }
+    return o._watch;
+  }
+
+  const watchHits = (o) =>
+    state.watch.length > 0 && state.watch.some((w) => watchable(o).includes(fold(w)));
+
+  // Below this length, a match buried inside a word is noise, not a morpheme.
+  const MIN_LOOSE = 5;
+
+  const reCache = new Map();
+  function res(term) {
+    let r = reCache.get(term);
+    if (!r) {
+      const e = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      r = {
+        // the term is a word of its own
+        whole: new RegExp(`(?:^|[^a-z0-9])${e}(?:$|[^a-z0-9])`),
+        // the term opens or closes a longer word
+        edge: new RegExp(`(?:^|[^a-z0-9])${e}|${e}(?:$|[^a-z0-9])`),
+      };
+      reCache.set(term, r);
+    }
+    return r;
+  }
+
+  // Ranked by how directly the term matched, best first:
+  //   5  a word of the label                  ("cola" in "Coca-Cola")
+  //   4  the other language's word for it     ("bread" -> "Kartoffel-Nuss-Brot")
+  //   3  opens or closes a longer label word  (German "Erdbeer" for "beer" -
+  //      a coincidence across languages, so it sits below a real translation)
+  //   2  buried inside a label word, and long enough to be a morpheme
+  //      ("schoko" in "Tafelschokolade")
+  //   1  only its category or store           (the rest of the aisle)
+  //   0  no match
   function relevance(o, terms) {
-    if (!terms.length) return 2;
-    const h = haystack(o);
-    let best = 2;
+    if (!terms.length) return 5;
+    let best = 5;
     for (const t of terms) {
-      if (!h.includes(t)) return 0;
-      if (!boundaryRe(t).test(h)) best = 1;
+      const r = res(t);
+      const label = haystack(o);
+      if (r.whole.test(label)) continue;
+      if (r.whole.test(haystackAlias(o))) {
+        best = Math.min(best, 4);
+        continue;
+      }
+      if (r.edge.test(label)) {
+        best = Math.min(best, 3);
+        continue;
+      }
+      if (t.length >= MIN_LOOSE && label.includes(t)) {
+        best = Math.min(best, 2);
+        continue;
+      }
+      if (r.edge.test(haystackMeta(o))) {
+        best = Math.min(best, 1);
+        continue;
+      }
+      return 0;
     }
     return best;
   }
@@ -217,7 +272,7 @@
 
   const countFor = (kw) => {
     const needle = fold(kw);
-    return state.offers.reduce((n, o) => n + (haystack(o).includes(needle) ? 1 : 0), 0);
+    return state.offers.reduce((n, o) => n + (watchable(o).includes(needle) ? 1 : 0), 0);
   };
 
   function renderWatch() {

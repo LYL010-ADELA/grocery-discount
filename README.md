@@ -43,6 +43,47 @@ keeps every other retailer's data intact.
 
 ---
 
+## Searching across languages
+
+Product names stay in German or French, but the search box accepts all three
+languages: `bread` finds *Pain au Maïs* and *Kartoffel-Nuss-Brot*, `beer` finds
+*Feldschlösschen Bier*, `egg` finds *Œuf CH*.
+
+This runs entirely offline - no translation API, no key, no per-week cost. The
+query is not translated; instead every offer is tagged at scrape time with the
+words for what it is in the two languages it is *not* written in, and those go
+into `offers.json` as `search_terms`. The vocabulary comes from the Open Food
+Facts taxonomies (ODbL), distilled once into `data/lexicon.json`:
+
+```bash
+python scripts/build_lexicon.py     # refresh the lexicon (rarely needed)
+```
+
+`data/lexicon.json` is committed, so a normal scrape never downloads it, and
+the 1 MB file is never served to the browser - only the ~18 KB of aliases it
+produces. If the file is missing, scraping still works and search simply stays
+single-language.
+
+Results are ranked by how directly they matched, best first:
+
+| | match |
+|---|---|
+| 5 | a word of the label — `cola` in *Coca-Cola* |
+| 4 | the other language's word for it — `bread` → *Kartoffel-Nuss-Brot* |
+| 3 | opens or closes a longer label word — German *Erdbeer* for `beer` |
+| 2 | buried inside a label word, 5+ characters — `schoko` in *Tafelschokolade* |
+| 1 | only its category or store — the rest of the aisle |
+
+Tier 4 sits above tier 3 on purpose: a curated translation beats two languages
+happening to share a few letters, which is why `beer` lists *Feldschlösschen
+Bier* before *Erdbeer*-flavoured yoghurt. Nothing is filtered out, only ordered.
+
+The lexicon is a *food* lexicon, so offers in Household, Health & Beauty, Baby,
+Pet and Non-food get no aliases at all — otherwise "Canard-WC" would be filed
+under duck, which is the same trap the categoriser had to learn.
+
+---
+
 ## Running it
 
 ```bash
@@ -85,11 +126,13 @@ Actions tab.
 scrapers/
   base.py         Offer model, price/note/unit normalisation
   categorize.py   German + French keywords -> 15 English categories
+  lexicon.py      offline DE/FR/EN aliases for cross-language search
   migros.py  denner.py  lidl.py  aligro.py  coop.py
   run.py          orchestrator -> data/offers.json
 site/             index.html, style.css, app.js (no build step)
 scripts/
-  add_coop.py     guided entry for Coop
+  add_coop.py       guided entry for Coop
+  build_lexicon.py  rebuild data/lexicon.json from Open Food Facts
 build_site.py     assembles _site/ for deployment
 ```
 

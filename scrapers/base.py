@@ -5,7 +5,7 @@ import dataclasses
 import datetime as _dt
 import re
 from html import unescape as _unescape
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 USER_AGENT = (
@@ -39,6 +39,9 @@ class Offer:
     valid_to: str = ""          # ISO date
     image: str = ""
     url: str = ""
+    # Equivalents of the food words in `name`, in the two languages this offer
+    # is not written in, so an English search finds a German product.
+    search_terms: list = dataclasses.field(default_factory=list)
 
     def finalise(self) -> "Offer":
         """Fill in whatever can be derived, and tidy up text fields."""

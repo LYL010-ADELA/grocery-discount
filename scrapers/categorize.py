@@ -426,6 +426,9 @@ def _norm(s: str) -> str:
     """Lowercase, strip accents and umlauts so 'Gemüse' matches 'gemuse'."""
     s = (s or "").lower()
     s = s.replace("ä", "a").replace("ö", "o").replace("ü", "u").replace("ß", "ss")
+    # NFKD leaves the ligatures alone, and retailers spell them out: labels say
+    # "Boeuf" and "Oeufs" where a dictionary says "bœuf" and "œufs".
+    s = s.replace("œ", "oe").replace("æ", "ae")
     s = unicodedata.normalize("NFKD", s)
     s = "".join(c for c in s if not unicodedata.combining(c))
     return re.sub(r"\s+", " ", s)

@@ -16,6 +16,7 @@ import sys
 import traceback
 from pathlib import Path
 
+from . import lexicon
 from .base import Offer, RETAILERS
 from .categorize import CATEGORIES
 
@@ -54,6 +55,24 @@ def collect(only: list[str] | None, quick: bool) -> tuple[list[Offer], dict]:
             traceback.print_exc(file=sys.stderr)
             status[name] = {"ok": False, "count": 0, "error": str(e)}
     return offers, status
+
+
+def add_search_aliases(offers: list[Offer]) -> None:
+    """Tag each offer with the other languages' words for what it is.
+
+    Done once here rather than in each scraper: it is the same operation for
+    every retailer, and it needs the lexicon loaded only one time.
+    """
+    if not lexicon.available():
+        print("no lexicon; cross-language search disabled "
+              "(run: python scripts/build_lexicon.py)")
+        return
+    tagged = 0
+    for o in offers:
+        o.search_terms = lexicon.aliases_for(o.name, o.subtitle, category=o.category)
+        if o.search_terms:
+            tagged += 1
+    print(f"cross-language aliases on {tagged}/{len(offers)} offers")
 
 
 def build_payload(offers: list[Offer], status: dict) -> dict:
@@ -125,6 +144,7 @@ def main() -> int:
     args = ap.parse_args()
 
     offers, status = collect(args.only, args.quick)
+    add_search_aliases(offers)
     if args.only:
         rows, status = _carry_over(offers, status, args.only)
         payload = build_payload_from_rows(rows, status)
