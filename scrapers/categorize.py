@@ -54,15 +54,19 @@ _KEYWORDS: dict[str, tuple[str, ...]] = {
     ),
     "Meat & Poultry": (
         "rindfleisch", "rind", "boeuf", "kalbfleisch", "kalb", "veau",
-        "schweinefleisch", "schwein", "porc", "lamm", "agneau", "poulet",
+        "schweinefleisch", "schwein", "porc", "lamm", "agneau", "lapin",
+        "kaninchen", "poulet",
         "huhn", "hahnchen", "pouletbrust", "truthahn", "dinde", "ente",
         "canard", "fleisch", "viande", "steak", "entrecote", "filet",
+        "escalope", "cotelette", "gigot", "jarret", "epaule", "poitrine",
         "plätzli", "schnitzel", "hackfleisch", "hache", "gehacktes",
-        "wurst", "saucisse", "saucisson", "cervelas", "salami", "schinken", "jambon",
+        "wurst", "saucisse", "saucisson", "chorizo", "merguez", "pancetta",
+        "coppa", "bresaola", "mortadella", "cervelas", "salami", "schinken", "jambon",
         "speck", "lard", "bacon", "braten", "roti", "voressen", "ragout",
         "geschnetzeltes", "spareribs", "chipolata", "bratwurst", "landjager",
         "trockenfleisch", "mostbrockli", "charcuterie", "aufschnitt",
-        "grillwurst", "hamburger", "burger", "nuggets", "cordon bleu",
+        "spiedini", "brochette", "grillspiess", "grillwurst", "hamburger",
+        "burger", "nuggets", "cordon bleu",
     ),
     "Fish & Seafood": (
         "fisch", "poisson", "lachs", "saumon", "thunfisch", "thon", "forelle",
@@ -71,12 +75,13 @@ _KEYWORDS: dict[str, tuple[str, ...]] = {
         "zander", "egli", "felchen", "sardine", "hering", "makrele",
         "maquereau", "fruits de mer", "meeresfruchte", "surimi", "pangasius",
         "fischstabchen", "seelachs", "hecht", "dorade", "loup de mer", "branzino",
-        "fillet", "basa", "tilapia", "wolfsbarsch", "rotbarsch", "heilbutt",
-        "rouget", "omble", "lotte", "raie", "espadon", "bar ", "anchois",
+        "fillet", "filets", "kliesche", "basa", "tilapia", "wolfsbarsch",
+        "rotbarsch", "heilbutt",
+        "rouget", "omble", "lotte", "raie", "espadon", "bar", "anchois",
         "flet", "scholle", "limande", "merlu", "colin", "lieu noir",
     ),
     "Dairy & Eggs": (
-        "eiersalat", "gouda", "cheddar", "edamer", "gorgonzola", "taleggio", "pecorino",
+        "kaffeerahm", "kaffeecreme", "eiersalat", "gouda", "cheddar", "edamer", "gorgonzola", "taleggio", "pecorino",
         "manchego", "halloumi", "burrata", "chaschuechli", "kaseschnitte",
         "streichkase", "frischkase", "hartkase", "weichkase", "rahmkase",
         "milch", "lait", "kase", "fromage", "joghurt", "yogourt", "yaourt",
@@ -84,7 +89,7 @@ _KEYWORDS: dict[str, tuple[str, ...]] = {
         "sere", "mozzarella", "gruyere", "emmentaler", "appenzeller",
         "raclette", "fondue", "camembert", "brie", "parmesan", "feta",
         "ricotta", "mascarpone", "huttenkase", "cottage", "eier", "oeufs",
-        "ei ", "tete de moine", "tilsiter", "vacherin", "sbrinz", "halbrahm",
+        "ei", "tete de moine", "tilsiter", "vacherin", "sbrinz", "halbrahm",
         "vollrahm", "milchdrink", "buttermilch", "kefir", "skyr", "creme fraiche",
     ),
     "Bread & Bakery": (
@@ -93,23 +98,27 @@ _KEYWORDS: dict[str, tuple[str, ...]] = {
         "boulangerie", "patisserie", "kuchen", "gateau", "torte", "tarte",
         "guetzli", "biscuit", "cake", "muffin", "donut", "brezel", "bretzel",
         "tartelette", "wahe", "cheesecake", "brownie", "crumble",
-        "butterzopf", "buttergipfeli", "milchbrotchen", "kasekuchen",
+        "brotli", "weggli", "cornetti", "brioche", "panettone", "focaccia",
+        "ciabatta", "butterzopf", "buttergipfeli", "milchbrotchen", "kasekuchen",
         "knackerli", "zwieback", "crackers", "waffeln", "gaufre", "blatterteig",
         "pate feuilletee", "teig", "vollkornbrot", "ruchbrot", "burli",
     ),
     "Pantry & Dry Goods": (
         "teigwaren", "pates", "pasta", "spaghetti", "penne", "nudeln",
         "reis", "riz", "risotto", "mehl", "farine", "zucker", "sucre",
-        "salz", "sel", "pfeffer", "poivre", "gewurz", "epice", "ol ",
+        "salz", "sel", "pfeffer", "poivre", "gewurz", "epice", "ol",
         "huile", "olivenol", "essig", "vinaigre", "sauce", "ketchup",
         "mayonnaise", "senf", "moutarde", "konserve", "conserve", "dose",
         "bouillon", "suppe", "soupe", "aromat", "streuwurze", "honig",
         "miel", "konfiture", "confiture", "marmelade", "nutella",
         "erdnussbutter", "muesli", "birchermuesli", "cornflakes", "cereales",
+        "pignon", "pinienkern", "sesam", "chiasamen", "leinsamen",
         "hornli", "gnocchi", "ravioli", "tortellini", "fiori", "farfalle",
         "fusilli", "tagliatelle", "lasagne", "cannelloni", "spatzli", "knopfli",
         "kellogg", "cerealien", "cruesli", "granola", "porridge",
-        "milchreis", "erdnussbutter", "kokosmilch", "haferflocken",
+        "rosti", "teigmischung", "backmischung", "fertigteig", "fruchtmus",
+        "trinkbeutel", "kompott", "apfelmus", "milchreis", "erdnussbutter",
+        "kokosmilch", "haferflocken",
         "flocons", "linsen", "lentille", "kichererbsen",
         "pois chiche", "polenta", "couscous", "quinoa", "tofu", "seitan",
         "kokosmilch", "tomatenpuree", "pelati", "backpulver", "vanille",
@@ -124,7 +133,7 @@ _KEYWORDS: dict[str, tuple[str, ...]] = {
         "confiserie", "chips", "snack", "nusse", "noix", "mandeln",
         "amande", "cashew", "pistazien", "popcorn", "salzstangen",
         "riegel", "barre", "kaugummi", "chewing", "gummibarchen",
-        "lindt", "toblerone", "kagi", "branche", "ragusa", "frey",
+        "lindt", "toblerone", "kagi", "branche", "ragusa", "frey", "ricola",
         "haribo", "oreo", "kitkat", "m&m", "pringles", "zweifel",
         "apero", "salzgeback", "praline", "dessert", "pudding",
     ),
@@ -132,7 +141,8 @@ _KEYWORDS: dict[str, tuple[str, ...]] = {
         "wasser", "eau", "mineralwasser", "saft", "jus", "orangensaft",
         "getrank", "boisson", "cola", "coca", "rivella", "sinalco",
         "eistee", "ice tea", "the froid", "kaffee", "cafe", "nespresso",
-        "tee", "the ", "sirup", "sirop", "energy drink", "red bull",
+        "tee", "the", "thee", "infusion", "tisane", "kraeutertee", "teebeutel",
+        "sirup", "sirop", "energy drink", "red bull",
         "limonade", "schweppes", "tonic", "smoothie", "kakao", "ovomaltine",
         "henniez", "valser", "evian", "vittel", "san pellegrino", "elmer",
         "caffe", "latte macchiato", "cappuccino", "espresso", "milchkaffee",
@@ -150,18 +160,23 @@ _KEYWORDS: dict[str, tuple[str, ...]] = {
         "cabernet", "syrah", "shiraz", "malbec", "primitivo", "montepulciano",
         "valpolicella", "bordeaux", "beaujolais", "cotes du rhone", "sangiovese",
         "gamay", "riesling", "sauvignon", "chardonnay", "grauburgunder",
+        "alentejo", "douro", "vinho", "porto", "rueda", "priorat", "doc",
+        "docg", "aoc", "igp", "barbera", "nero d'avola", "garnacha",
     ),
     "Household": (
         "waschmittel", "lessive", "reinig", "nettoyant", "putzmittel",
-        "spulmittel", "produit vaisselle", "abwaschmittel", "wc-", "wc ",
-        "toilettenpapier", "papier toilette", "haushaltpapier", "essuie-tout",
+        "spulmittel", "produit vaisselle", "abwaschmittel", "wc",
+        "toilettenpapier", "papier toilette", "papier wc", "wc-papier",
+        "haushaltpapier", "essuie-tout",
         "taschentuch", "mouchoir", "mullsack", "sac poubelle", "abfallsack",
         "alufolie", "frischhaltefolie", "backpapier", "servietten",
         "serviette", "kerze", "bougie", "batterie", "pile", "gluhbirne",
         "ampoule", "persil", "ariel", "omo", "potz", "ajax", "cif",
+        "vaisselle", "spulmaschine", "geschirrspuler", "handymatic",
         "weichspuler", "assouplissant", "handschuhe", "schwamm", "eponge",
         "mr proper", "mr. proper", "meister proper", "antikal", "anticalcaire",
-        "entkalker", "degrais", "degraissant", "desinfect", "desinfekt",
+        "entkalker", "degrais", "degraissant", "desinf", "desinfect", "desinfekt",
+        "sanytol", "salle de bains",
         "alustar", "alufolie", "haushaltfolie", "klarsichtfolie", "wc-ente",
         "javel", "bleach", "scheuermittel", "glasreiniger", "nettoyant vitres",
     ),
@@ -171,9 +186,11 @@ _KEYWORDS: dict[str, tuple[str, ...]] = {
         "deodorant", "rasier", "rasoir", "creme gesicht", "hautcreme",
         "bodylotion", "korperlotion", "make-up", "maybelline", "l'oreal",
         "loreal", "nivea", "dove", "garnier", "elmex", "candida", "signal",
+        "dusche", "duschen", "duschbad", "badeschaum", "korperpflege",
         "sonnencreme", "solaire", "parfum", "haarfarbe", "coloration",
         "binden", "tampon", "damenhygiene", "vitamin", "medikament",
         "pflaster", "apotheke", "handcreme", "lippenpflege", "kosmetik",
+        "dentaire", "bucco", "mundhygiene", "meridol",
         "brosse a dents", "br. a dents", "br.dent", "br. dents", "zahnbuerste",
         "trisa", "interdental", "mundspulung",
         "mascara", "lippenstift", "rouge a levres", "nagellack", "vernis",
@@ -269,10 +286,11 @@ _OVERRIDE: tuple[tuple[str, str], ...] = (
 # length alone would hand it to "paprika".
 _STRONG = frozenset((
     # snacks & sweets
-    "chips", "zweifel", "lindt", "toblerone", "haribo", "oreo", "kitkat",
+    "chips", "zweifel", "lindt", "toblerone", "haribo", "oreo", "kitkat", "ricola",
     "pringles", "kagi", "ragusa", "branche", "popcorn", "praline",
     "schokolade", "chocolat", "riegel", "kaugummi",
     # beverages
+    "kaffee", "cafe", "espresso", "nespresso",
     "coca", "cola", "rivella", "sinalco", "red bull", "schweppes", "eistee",
     "ice tea", "nespresso", "ovomaltine", "henniez", "valser", "evian",
     "san pellegrino", "smoothie", "sirup", "sirop",
@@ -297,8 +315,10 @@ _STRONG = frozenset((
     "tartelette", "wahe", "cheesecake", "brownie", "crumble",
     # meat cuts that contain other category words
     "cordon bleu", "hamburger", "bratwurst", "cervelas", "salami",
-    "merlu", "cabillaud", "colin", "lieu noir", "dorade", "rouget", "omble",
-    "truite", "saumon", "thon", "sardine", "anchois", "maquereau", "bar ",
+    "porc", "boeuf", "veau", "poulet", "agneau", "dinde", "canard", "lapin",
+    "roti", "epaule", "entrecote", "escalope", "cotelette", "gigot", "jarret",
+    "kaffeerahm", "merlu", "cabillaud", "colin", "lieu noir", "dorade", "rouget", "omble",
+    "truite", "saumon", "thon", "sardine", "anchois", "maquereau", "bar",
     "lotte", "raie", "espadon", "saucisson",
     "mr proper", "mr. proper", "antikal", "alustar", "trisa", "kellogg",
     "gran reserva", "chaschuechli", "gouda", "gnocchi", "hornli",
@@ -318,6 +338,7 @@ _ALL_PAIRS = [(kw, cat) for cat, kws in _KEYWORDS.items() for kw in kws]
 # keeps "Mozzarella di Bufala Gobelet" (cheese in a cup) in Dairy.
 _HEAD_NOUN: tuple[tuple[str, str], ...] = (
     ("gobelet", "Non-food & Other"),
+    ("menubox", "Non-food & Other"),
     ("couvercle", "Non-food & Other"),
     ("barquette", "Non-food & Other"),
     ("plateau", "Non-food & Other"),
@@ -336,14 +357,50 @@ _STRONG_ORDERED = sorted(
 )
 
 
-def _word_start(kw: str, blob: str) -> bool:
-    """True when kw appears at the start of a word in blob."""
+def _positions(kw: str, blob: str):
     i = blob.find(kw)
     while i != -1:
-        if i == 0 or not blob[i - 1].isalnum():
-            return True
+        yield i
         i = blob.find(kw, i + 1)
+
+
+def _word_start(kw: str, blob: str) -> bool:
+    """True when kw begins a word in blob."""
+    return any(i == 0 or not blob[i - 1].isalnum() for i in _positions(kw, blob))
+
+
+def _whole_word(kw: str, blob: str) -> bool:
+    """True when kw is a complete word, allowing a French/English plural
+    ending: 'sel' matches "sel" and "sels" but not "Sessel", and "amande"
+    matches "amandes"."""
+    n = len(kw)
+    for i in _positions(kw, blob):
+        if i and blob[i - 1].isalnum():
+            continue
+        rest = blob[i + n :]
+        if rest[:1] in ("s", "x"):
+            rest = rest[1:]
+        if not rest[:1].isalnum():
+            return True
     return False
+
+
+def _word_end(kw: str, blob: str) -> bool:
+    """True when kw closes a word. This is what German compounds need: they
+    carry the head noun last, so Vollmilch ends in milch and Bratwurst in
+    wurst. Requiring the ending is what stops 'epice' matching 'epicee'."""
+    n = len(kw)
+    return any(
+        (i + n >= len(blob) or not blob[i + n].isalnum())
+        for i in _positions(kw, blob)
+    )
+
+
+# Below this length a keyword is only trusted as a whole word or on a word
+# boundary. "sel", "riz" and "ol" are real words, but they also sit inside
+# Sessel, Chorizo and Meridol, where they mean nothing.
+_LOOSE_MIN = 7
+_SUFFIX_MIN = 4
 
 _bad = {cat for _, cat in _OVERRIDE + _HEAD_NOUN} - set(CATEGORIES)
 if _bad:
@@ -400,9 +457,22 @@ def categorize(*texts: str, native: str = "") -> str:
     for kw, cat in _STRONG_ORDERED:
         if _word_start(kw, blob):
             return cat
-    # Tier 3: plain substring, which is what German compounds need -
-    # "Vollmilch" carries its head noun at the end, not at a word boundary.
+    # Tier 3, in three passes of decreasing confidence.
+    # 3a: the keyword is a complete word.
     for kw, cat in _ORDERED:
-        if kw in blob:
+        if _whole_word(kw, blob):
+            return cat
+    # 3b: the keyword sits on a word boundary. German compounds put the head
+    # noun at either end - Vollmilch closes with it, Teigmischung opens with
+    # it - so both sides count.
+    for kw, cat in _ORDERED:
+        if len(kw) >= _SUFFIX_MIN and (
+            _word_end(kw, blob) or _word_start(kw, blob)
+        ):
+            return cat
+    # 3c: anywhere at all, but only for keywords long enough that a chance
+    # collision is implausible.
+    for kw, cat in _ORDERED:
+        if len(kw) >= _LOOSE_MIN and kw in blob:
             return cat
     return "Non-food & Other"
