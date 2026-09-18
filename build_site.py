@@ -38,19 +38,38 @@ def build() -> Path:
     return OUT
 
 
-def serve(directory: Path, port: int = 8000) -> None:
+def serve(directory: Path, port: int = 8000, tries: int = 20) -> None:
     import functools
     import http.server
     import socketserver
 
     handler = functools.partial(http.server.SimpleHTTPRequestHandler,
                                 directory=str(directory))
-    with socketserver.TCPServer(("", port), handler) as httpd:
-        print(f"serving {directory.name}/ at http://localhost:{port}  (ctrl-c to stop)")
+
+    # Bind localhost only: this is a preview server, it has no business being
+    # reachable from the network, and binding one address rather than all of
+    # them also avoids clashing with anything holding another 127.x address.
+    for candidate in range(port, port + tries):
         try:
-            httpd.serve_forever()
-        except KeyboardInterrupt:
-            print("\nstopped")
+            httpd = socketserver.TCPServer(("127.0.0.1", candidate), handler)
+        except OSError as e:
+            if e.errno not in (48, 98):          # EADDRINUSE on macOS / Linux
+                raise
+            print(f"port {candidate} is taken, trying {candidate + 1}…")
+            continue
+
+        with httpd:
+            if candidate != port:
+                print(f"(requested port {port} was busy)")
+            print(f"serving {directory.name}/ at http://localhost:{candidate}"
+                  f"  (ctrl-c to stop)")
+            try:
+                httpd.serve_forever()
+            except KeyboardInterrupt:
+                print("\nstopped")
+        return
+
+    sys.exit(f"no free port in {port}-{port + tries - 1}; pass --port")
 
 
 if __name__ == "__main__":
