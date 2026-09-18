@@ -1,0 +1,49 @@
+Third-party data in this repository
+===================================
+
+The MIT licence in LICENSE covers this project's source code. Two kinds of data
+here are not the author's to license, and are covered separately.
+
+
+data/lexicon.json — Open Database License (ODbL) 1.0
+----------------------------------------------------
+
+Built by scripts/build_lexicon.py from the Open Food Facts category and
+ingredient taxonomies:
+
+    https://world.openfoodfacts.org/data
+    https://static.openfoodfacts.org/data/taxonomies/categories.json
+    https://static.openfoodfacts.org/data/taxonomies/ingredients.json
+
+Open Food Facts publishes its database under the Open Database License (ODbL)
+v1.0, and the individual contents under the Database Contents License (DbCL)
+v1.0.
+
+    https://opendatacommons.org/licenses/odbl/1-0/
+    https://opendatacommons.org/licenses/dbcl/1-0/
+
+data/lexicon.json is a derivative database, so ODbL applies to it: it may be
+used, including commercially, provided Open Food Facts is credited, the same
+licence is kept on derivative databases, and any technical restriction added to
+a distributed version is accompanied by a version without one.
+
+If you reuse this repository, keep this attribution. If you only want the code
+and not the data, delete data/lexicon.json; the scrapers run without it and
+cross-language search simply turns off.
+
+
+Retailer data — not licensed, collected and displayed as facts
+--------------------------------------------------------------
+
+Prices, discount percentages, product names and validity dates are collected
+from the public offer pages of Migros, Denner, Lidl and Aligro. They are
+statements of fact about what those shops charge this week, gathered for
+comparison and reproduced with attribution and a link to the original page.
+
+Product images are hot-linked from each retailer's own CDN. They are not copied
+into or redistributed by this repository, and their copyright stays with
+whoever holds it.
+
+This project is not affiliated with, endorsed by, sponsored by or connected to
+any of those retailers. Their names and logos are their own trade marks, used
+here only to say which shop an offer came from.

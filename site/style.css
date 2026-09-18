@@ -286,6 +286,8 @@ input:focus-visible, select:focus-visible, button:focus-visible {
   gap: 20px; flex-wrap: wrap; margin-bottom: 10px;
 }
 .foot-note { flex: 1 1 320px; margin-bottom: 0 !important; }
+/* The legal line matters but should not compete with the practical advice. */
+.foot-legal { display: inline-block; margin-top: 5px; font-size: 11px; opacity: .8; }
 
 .repo-link {
   display: inline-flex; align-items: center; gap: 10px;

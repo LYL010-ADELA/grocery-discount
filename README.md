@@ -108,9 +108,40 @@ project sticks to a few rules:
 - **Product images are hot-linked, not copied.** They load from the retailer's
   own CDN, so nothing is republished from this repo.
 
-This is a personal, non-commercial project by a student. It is not affiliated
-with, endorsed by, or a partner of any retailer named here. If a retailer asks
-for their data to be removed, open an issue and it will be taken out.
+---
+
+## Disclaimer
+
+This is a personal, non-commercial project by a student, and comes with no
+warranty of any kind.
+
+**Not affiliated.** This project is not affiliated with, endorsed by, sponsored
+by or connected to Migros, Denner, Lidl, Aligro or any other retailer. Their
+names and logos are their own trade marks and appear here only to identify
+which shop an offer came from.
+
+**Prices may be wrong.** They are collected automatically once a day and can be
+stale, mis-parsed or regional. The shelf is the authority — always check in
+store. Nothing here is an offer, and no liability is accepted for a wasted trip
+or a decision made on these numbers.
+
+**Removal.** If you represent one of these retailers and want your data taken
+out, open an issue and it will be removed.
+
+---
+
+## Licence
+
+- **Code** — MIT, see [LICENSE](LICENSE).
+- **`data/lexicon.json`** — derived from the Open Food Facts taxonomies and
+  therefore covered by the **Open Database License (ODbL) v1.0**, not MIT.
+  Credit Open Food Facts and keep derivative databases under the same licence.
+- **Retailer prices and product names** — facts, collected and shown with
+  attribution and a link back to the source page.
+- **Product images** — hot-linked from each retailer's CDN, never copied into
+  this repository.
+
+Details in [NOTICE](NOTICE).
 
 ---
 
