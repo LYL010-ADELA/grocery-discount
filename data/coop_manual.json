@@ -1,7 +1,0 @@
-{
-  "_comment": "Coop deals, typed in by hand (coop.ch blocks automated access). Run: python scripts/add_coop.py",
-  "_schema": "offers[] = {name, price, was_price?, category?, subtitle?, note?, unit?, url?}",
-  "valid_from": "",
-  "valid_to": "",
-  "offers": []
-}

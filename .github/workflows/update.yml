@@ -2,7 +2,7 @@ name: Update offers and deploy
 
 on:
   schedule:
-    # 05:10 UTC daily. Swiss promo weeks start Tuesday (Migros, Coop, Denner)
+    # 05:10 UTC daily. Swiss promo weeks start Tuesday (Migros, Denner)
     # and Thursday (Lidl), so a daily run always catches the changeover.
     - cron: "10 5 * * *"
   push:

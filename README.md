@@ -1,6 +1,6 @@
 # Swiss Grocery Deals
 
-This week's supermarket discounts in Switzerland, collected from five retailers
+This week's supermarket discounts in Switzerland, collected from four retailers
 and shown in one English-language page you can filter by store, category and
 keyword. Built for price-sensitive students deciding where to shop.
 
@@ -17,29 +17,18 @@ label says. Categories, notes and the interface are in English.
 | **Denner** | `POST /nuxt-api/promotions`, the endpoint its own offers page paginates against | ~230 |
 | **Lidl** | `data-grid-data` JSON embedded in the offer pages, incl. Lidl Plus app prices | ~185 |
 | **Aligro** | `pagination` JSON on each `/actions/...` category page | ~2200 |
-| **Coop** | **Manual entry** — see below | you decide |
 
-All four automated sources are plain HTTP and JSON. No headless browser runs in
+All four sources are plain HTTP and JSON. No headless browser runs in
 production, so a scheduled update finishes in about a minute.
 
-### Why Coop is manual
+### Coop is not included
 
 coop.ch is behind **DataDome**, a commercial anti-bot service that fingerprints
 the client and answers with a CAPTCHA challenge. Every request — plain HTTP,
 headless Chromium, and real Chrome — comes back `403 Forbidden`. Getting past
 that would mean forging device fingerprints and wiring up a CAPTCHA solver,
 which is circumventing an access control the retailer deliberately operates, so
-this project does not attempt it.
-
-Instead, type the Coop deals worth comparing straight from the weekly flyer:
-
-```bash
-python scripts/add_coop.py          # guided prompts, guesses the category
-python -m scrapers.run --only coop  # merge into the dataset
-```
-
-Twenty minutes a week covers the deals actually worth comparing. A partial run
-keeps every other retailer's data intact.
+this project does not attempt it, and Coop is left out rather than half-served.
 
 ---
 
@@ -114,7 +103,7 @@ the page footer says which source went missing.
 3. That's it. `.github/workflows/update.yml` runs daily at 05:10 UTC, commits a
    refreshed `data/offers.json`, and deploys.
 
-Swiss promo weeks start Tuesday (Migros, Coop, Denner) and Thursday (Lidl), so
+Swiss promo weeks start Tuesday (Migros, Denner) and Thursday (Lidl), so
 a daily run always catches the changeover. Trigger one by hand any time from the
 Actions tab.
 
@@ -127,11 +116,10 @@ scrapers/
   base.py         Offer model, price/note/unit normalisation
   categorize.py   German + French keywords -> 15 English categories
   lexicon.py      offline DE/FR/EN aliases for cross-language search
-  migros.py  denner.py  lidl.py  aligro.py  coop.py
+  migros.py  denner.py  lidl.py  aligro.py
   run.py          orchestrator -> data/offers.json
 site/             index.html, style.css, app.js (no build step)
 scripts/
-  add_coop.py       guided entry for Coop
   build_lexicon.py  rebuild data/lexicon.json from Open Food Facts
 build_site.py     assembles _site/ for deployment
 ```

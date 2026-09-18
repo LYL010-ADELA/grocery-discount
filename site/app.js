@@ -232,7 +232,7 @@
 
     box.innerHTML = rows.map((r) => {
       if (!r.count) {
-        const why = r.retailer === "Coop" ? "needs manual entry" : "no data";
+        const why = "no data this week";
         return `<div class="store-card is-empty">
           <div class="store-name">${esc(r.retailer)}</div>
           <p class="store-stat">—</p>

@@ -14,7 +14,7 @@ USER_AGENT = (
 )
 
 # Retailers we aggregate, in the order they show up in the UI.
-RETAILERS = ["Migros", "Coop", "Denner", "Lidl", "Aligro"]
+RETAILERS = ["Migros", "Denner", "Lidl", "Aligro"]
 
 
 @dataclass

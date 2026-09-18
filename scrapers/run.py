@@ -20,13 +20,12 @@ from . import lexicon
 from .base import Offer, RETAILERS
 from .categorize import CATEGORIES
 
-from . import aligro, coop, denner, lidl, migros
+from . import aligro, denner, lidl, migros
 
 OUT = Path(__file__).resolve().parent.parent / "data" / "offers.json"
 
 SOURCES = {
     "migros": migros.scrape,
-    "coop": coop.scrape,
     "denner": denner.scrape,
     "lidl": lidl.scrape,
     "aligro": aligro.scrape,
