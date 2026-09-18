@@ -1,11 +1,23 @@
 # Swiss Grocery Deals
 
+**[lyl010-adela.github.io/grocery-discount](https://lyl010-adela.github.io/grocery-discount/)**
+
 This week's supermarket discounts in Switzerland, collected from four retailers
 and shown in one English-language page you can filter by store, category and
 keyword. Built for price-sensitive students deciding where to shop.
 
-Product names stay in German or French on purpose — that is what the shelf
-label says. Categories, notes and the interface are in English.
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshot-dark.png">
+  <img src="docs/screenshot.png" alt="The site showing four store summaries, a
+       watchlist, category filters and discounted products" width="100%">
+</picture>
+
+Search works in English, German or French: `bread` finds *Pain au Maïs* and
+*Kartoffel-Nuss-Brot*, `beer` finds *Feldschlösschen Bier*. Product names
+themselves stay in German or French on purpose — that is what the shelf label
+says. Categories, notes and the interface are in English.
+
+Updated every morning by GitHub Actions. No API keys, no tracking, no cost.
 
 ---
 
