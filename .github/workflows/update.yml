@@ -1,0 +1,67 @@
+name: Update offers and deploy
+
+on:
+  schedule:
+    # 05:10 UTC daily. Swiss promo weeks start Tuesday (Migros, Coop, Denner)
+    # and Thursday (Lidl), so a daily run always catches the changeover.
+    - cron: "10 5 * * *"
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write      # commit the refreshed data/offers.json
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Collect offers
+        # Never fail the deploy over one flaky retailer; run.py already keeps
+        # going and records which source broke.
+        run: python -m scrapers.run || echo "scrape finished with errors"
+
+      - name: Commit refreshed data
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/offers.json
+          if git diff --staged --quiet; then
+            echo "no change"
+          else
+            git commit -m "data: refresh offers ($(date -u +%Y-%m-%d))"
+            git push
+          fi
+
+      - name: Build site
+        run: python build_site.py
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: scrape
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

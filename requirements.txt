@@ -1,0 +1,8 @@
+# Runtime dependency for the scrapers. All five sources are plain HTTP+JSON;
+# no headless browser is needed.
+requests>=2.32
+
+# Playwright was used only to discover the retailers' internal endpoints
+# (intercepting the XHRs their own pages make). Install it if you need to
+# re-discover an endpoint after a site redesign:
+#   pip install playwright && playwright install chromium

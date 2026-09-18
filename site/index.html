@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Swiss Grocery Deals</title>
+<meta name="description" content="This week's supermarket discounts in Switzerland, in one place.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site-head">
+  <div class="wrap">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">🛒</span>
+      <div>
+        <h1>Swiss Grocery Deals</h1>
+        <p class="tagline">This week's supermarket discounts, side by side.</p>
+      </div>
+    </div>
+    <div class="head-meta">
+      <span id="updated" class="updated">Loading…</span>
+      <button id="theme-toggle" class="icon-btn" type="button" aria-label="Toggle dark mode">◐</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- Where to shop this week -->
+  <section class="panel" aria-labelledby="summary-h">
+    <h2 id="summary-h">Where to shop this week</h2>
+    <div id="summary" class="summary-grid"></div>
+  </section>
+
+  <!-- Watchlist -->
+  <section class="panel" aria-labelledby="watch-h">
+    <div class="panel-head">
+      <h2 id="watch-h">Your watchlist</h2>
+      <span class="hint">Saved in this browser only</span>
+    </div>
+    <form id="watch-form" class="watch-form">
+      <label class="sr-only" for="watch-input">Add a keyword to watch</label>
+      <input id="watch-input" type="text" placeholder="e.g. Lachs, Kaffee, Butter…" autocomplete="off">
+      <button type="submit" class="btn">Watch</button>
+    </form>
+    <div id="watch-tags" class="tag-row"></div>
+    <div id="watch-hits" class="watch-hits"></div>
+  </section>
+
+  <!-- Filters -->
+  <section class="panel filters" aria-labelledby="filter-h">
+    <h2 id="filter-h" class="sr-only">Filter offers</h2>
+
+    <div class="filter-row search-row">
+      <label class="sr-only" for="search">Search offers</label>
+      <input id="search" type="search" placeholder="Search products…" autocomplete="off">
+      <label class="sr-only" for="sort">Sort by</label>
+      <select id="sort">
+        <option value="discount">Biggest discount</option>
+        <option value="price-asc">Cheapest first</option>
+        <option value="price-desc">Most expensive</option>
+        <option value="saving">Largest saving in CHF</option>
+        <option value="name">Name A–Z</option>
+      </select>
+    </div>
+
+    <div class="filter-row">
+      <span class="filter-label">Store</span>
+      <div id="retailer-chips" class="chip-row"></div>
+    </div>
+
+    <div class="filter-row">
+      <span class="filter-label">Category</span>
+      <div id="category-chips" class="chip-row"></div>
+    </div>
+
+    <div class="filter-row toggles">
+      <label class="check"><input type="checkbox" id="only-big"> Only 30%+ off</label>
+      <button id="reset" class="link-btn" type="button">Reset filters</button>
+    </div>
+  </section>
+
+  <div id="result-count" class="result-count" role="status"></div>
+  <div id="grid" class="grid"></div>
+  <div id="empty" class="empty" hidden>
+    <p>No offers match those filters.</p>
+    <button class="btn" type="button" onclick="document.getElementById('reset').click()">Reset filters</button>
+  </div>
+  <button id="more" class="btn more" type="button" hidden>Show more</button>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <p>
+      Prices are collected from each retailer's public offer pages and may lag behind the shelf.
+      Always check in store. Product names are kept in German or French, exactly as they appear on the label.
+    </p>
+    <p id="sources" class="sources"></p>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
