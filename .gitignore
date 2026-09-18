@@ -3,3 +3,8 @@ __pycache__/
 .venv/
 .DS_Store
 _site/
+
+# Rebuilt from scratch on every run and deployed straight to Pages. Committing
+# it daily would add ~1.3 MB of history per run for data that is stale the
+# next morning; `python -m scrapers.run` regenerates it in about a minute.
+data/offers.json

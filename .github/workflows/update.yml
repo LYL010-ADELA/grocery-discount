@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write      # commit the refreshed data/offers.json
+  contents: read
   pages: write
   id-token: write
 
@@ -33,21 +33,25 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Collect offers
-        # Never fail the deploy over one flaky retailer; run.py already keeps
-        # going and records which source broke.
+        # One flaky retailer must not take the whole run down; run.py keeps
+        # going and records which source failed.
         run: python -m scrapers.run || echo "scrape finished with errors"
 
-      - name: Commit refreshed data
+      - name: Check the scrape is usable
+        # The data is never committed, so the only copy of a bad run is the one
+        # about to go live. If every retailer failed, stop here and leave the
+        # previous deploy serving yesterday's prices rather than an empty page.
         run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/offers.json
-          if git diff --staged --quiet; then
-            echo "no change"
-          else
-            git commit -m "data: refresh offers ($(date -u +%Y-%m-%d))"
-            git push
-          fi
+          python - <<'PY'
+          import json, pathlib, sys
+          p = pathlib.Path("data/offers.json")
+          if not p.exists():
+              sys.exit("no data/offers.json - scrape produced nothing")
+          offers = json.loads(p.read_text(encoding="utf-8")).get("offers", [])
+          print(f"{len(offers)} offers")
+          if len(offers) < 100:
+              sys.exit(f"only {len(offers)} offers; refusing to deploy over a good site")
+          PY
 
       - name: Build site
         run: python build_site.py

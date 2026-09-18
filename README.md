@@ -100,8 +100,21 @@ the page footer says which source went missing.
 
 1. Push this repository to GitHub.
 2. **Settings → Pages → Source: GitHub Actions**.
-3. That's it. `.github/workflows/update.yml` runs daily at 05:10 UTC, commits a
-   refreshed `data/offers.json`, and deploys.
+3. That's it. `.github/workflows/update.yml` runs daily at 05:10 UTC: it
+   scrapes, builds and deploys.
+
+`data/offers.json` is **not** committed — it is rebuilt on every run and goes
+straight to Pages. Committing it daily would add ~1.3 MB of history per run for
+data that is stale the next morning. A fresh clone therefore has no offers until
+you run the scraper once:
+
+```bash
+python -m scrapers.run
+```
+
+Because the deployed copy is the only copy, the workflow refuses to publish a
+run that produced fewer than 100 offers — if every retailer breaks at once, the
+previous deploy keeps serving yesterday's prices instead of an empty page.
 
 Swiss promo weeks start Tuesday (Migros, Denner) and Thursday (Lidl), so
 a daily run always catches the changeover. Trigger one by hand any time from the
