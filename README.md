@@ -25,7 +25,7 @@ Updated every morning by GitHub Actions. No API keys, no tracking, no cost.
 
 | Retailer | Method | Typical yield |
 |---|---|---|
-| **Migros** | Internal JSON API (`product-display`), guest token from `/authentication/public/v1/api/guest` | ~145 |
+| **Migros** | In-store promotion feeds + product cards, guest token from `/authentication/public/v1/api/guest` | ~45 |
 | **Denner** | `POST /nuxt-api/promotions`, the endpoint its own offers page paginates against | ~230 |
 | **Lidl** | `data-grid-data` JSON embedded in the offer pages, incl. Lidl Plus app prices | ~185 |
 | **Aligro** | `pagination` JSON on each `/actions/...` category page | ~2200 |
@@ -82,6 +82,35 @@ Bier* before *Erdbeer*-flavoured yoghurt. Nothing is filtered out, only ordered.
 The lexicon is a *food* lexicon, so offers in Household, Health & Beauty, Baby,
 Pet and Non-food get no aliases at all — otherwise "Canard-WC" would be filed
 under duck, which is the same trap the categoriser had to learn.
+
+---
+
+## What this does and does not do
+
+Prices and discounts are facts, not creative work, and every page these
+scrapers read is one a shopper can open without logging in. Even so, the
+project sticks to a few rules:
+
+- **robots.txt is binding here.** `scripts/check_robots.py` checks every
+  endpoint the scrapers request against each retailer's live robots.txt, and
+  CI runs it before scraping, so a rule added later fails the build instead of
+  being ignored. Migros disallows `*/promotion/`, so the endpoint that would
+  list roughly four times as many Migros promotions is not used — and is not
+  routed around either. That is why Migros contributes ~45 offers and Denner
+  ~230.
+- **No access controls are circumvented.** Coop runs DataDome; it is left out
+  rather than defeated (see above). Nothing here forges fingerprints, solves
+  CAPTCHAs, or logs in.
+- **Once a day, slowly.** One scheduled run, a pause between requests, an
+  honest User-Agent. The load is smaller than one person browsing.
+- **Attribution and linking.** Every offer links back to the retailer's own
+  page; the footer names each source and its offer count.
+- **Product images are hot-linked, not copied.** They load from the retailer's
+  own CDN, so nothing is republished from this repo.
+
+This is a personal, non-commercial project by a student. It is not affiliated
+with, endorsed by, or a partner of any retailer named here. If a retailer asks
+for their data to be removed, open an issue and it will be taken out.
 
 ---
 
@@ -146,6 +175,7 @@ scrapers/
 site/             index.html, style.css, app.js (no build step)
 scripts/
   build_lexicon.py  rebuild data/lexicon.json from Open Food Facts
+  check_robots.py   verify every endpoint against the live robots.txt
 build_site.py     assembles _site/ for deployment
 ```
 

@@ -32,6 +32,11 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Check robots.txt still permits every endpoint
+        # Retailers change robots.txt without notice. Fail here rather than
+        # keep scraping a path they have since asked crawlers to leave alone.
+        run: python scripts/check_robots.py
+
       - name: Collect offers
         # One flaky retailer must not take the whole run down; run.py keeps
         # going and records which source failed.

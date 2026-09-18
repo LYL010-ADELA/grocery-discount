@@ -2,6 +2,10 @@
 # no headless browser is needed.
 requests>=2.32
 
+# Google-specification robots.txt parsing for scripts/check_robots.py. The
+# standard library's urllib.robotparser gets leading-wildcard rules wrong.
+protego>=0.3
+
 # Playwright was used only to discover the retailers' internal endpoints
 # (intercepting the XHRs their own pages make). Install it if you need to
 # re-discover an endpoint after a site redesign:

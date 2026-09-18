@@ -5,16 +5,23 @@ Endpoints were confirmed by intercepting the requests the real offers page
 
   1. GET  /authentication/public/v1/api/guest
          -> `leshopch` response header, used as a bearer-style header
-  2. POST /product-display/public/web/v3/products/promotion/search
-         -> paginated list of product uids currently on promotion
+  2. GET  /product-display/public/v1/promotions/instore/{new,weekend,personalized}
+         -> the ids of this week's in-store promotions
   3. POST /product-display/public/v4/product-cards        (type PRODUCT)
          -> name, regular price, promotion price, badges, dates, category
   4. GET  /product-display/public/v2/promotions-details/   (type GROUP_PROMOTION)
          -> range deals ("whole X assortment"), priced via an example in the
             German discount hint
 
-The search feed mixes both types: roughly 40% single products, 60% group
-promotions. Handling only the first kind loses most of the week's deals.
+The feed mixes both types: single products and group promotions ("whole
+Maybelline range, -50%"). Handling only the first kind loses most of the deals.
+
+Note on coverage: there is a richer endpoint, /products/promotion/search, that
+lists roughly four times as many promotions. Migros' robots.txt disallows
+`*/promotion/`, which that path matches, so this scraper does not use it - and
+does not reconstruct the same list through another door either. The instore
+endpoints below are explicitly not disallowed. scripts/check_robots.py enforces
+this.
 """
 from __future__ import annotations
 
@@ -29,7 +36,7 @@ from .categorize import categorize
 
 BASE = "https://www.migros.ch"
 AUTH = f"{BASE}/authentication/public/v1/api/guest"
-SEARCH = f"{BASE}/product-display/public/web/v3/products/promotion/search"
+INSTORE = BASE + "/product-display/public/v1/promotions/instore/{kind}"
 CARDS = f"{BASE}/product-display/public/v4/product-cards"
 DETAILS = BASE + "/product-display/public/v2/promotions-details/{ids}"
 
@@ -37,7 +44,8 @@ DETAILS = BASE + "/product-display/public/v2/promotions-details/{ids}"
 # gmvd Vaud, gmge Genève, gmos Ostschweiz, ...) return cooperative-only prices.
 DEFAULT_REGION = "national"
 
-PAGE = 100          # the site itself requests 100 at a time
+# The three in-store feeds overlap; together they are the week's promotions.
+INSTORE_KINDS = ("new", "weekend", "personalized")
 CARD_BATCH = 40     # uids per product-cards call
 RETAILER = "Migros"
 
@@ -67,41 +75,34 @@ def _promotion_ids(s: requests.Session, region: str) -> tuple[list[int], list[st
     products: list[int] = []
     groups: list[str] = []
     seen: set[str] = set()
-    start = 0
-    while True:
-        body = {
-            "storeType": "OFFLINE",
-            "period": "CURRENT",
-            "filters": {},
-            "sortFields": ["categoryLevel"],
-            "sortOrder": "asc",
-            "from": start,
-            "until": start + PAGE,
-            "region": region,
-            "warehouse": "1",
-            "enabledSponsoredProducts": True,
-        }
-        r = s.post(SEARCH, json=body, timeout=40)
-        r.raise_for_status()
-        d = r.json()
-        items = d.get("items") or []
+
+    for kind in INSTORE_KINDS:
+        try:
+            r = s.get(
+                INSTORE.format(kind=kind),
+                params={"region": region, "language": "en"},
+                timeout=30,
+            )
+            r.raise_for_status()
+            items = r.json().get("items") or []
+        except (requests.RequestException, ValueError) as e:
+            print(f"  [Migros] instore/{kind} failed: {e}")
+            continue
+
         for it in items:
             if not isinstance(it, dict):
                 continue
-            raw, kind = it.get("id"), it.get("type")
-            key = f"{kind}:{raw}"
+            raw, sort = it.get("id"), it.get("type")
+            key = f"{sort}:{raw}"
             if raw is None or key in seen:
                 continue
             seen.add(key)
-            if kind == "GROUP_PROMOTION":
+            if sort == "GROUP_PROMOTION":
                 groups.append(str(raw))
             else:
                 products.append(int(raw))
-        total = int(d.get("numberOfItems") or 0)
-        start += PAGE
-        if start >= total or not items:
-            break
-        time.sleep(0.4)
+        time.sleep(0.4)  # be polite
+
     return products, groups
 
 
