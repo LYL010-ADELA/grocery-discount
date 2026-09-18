@@ -54,6 +54,34 @@
   const watchHits = (o) =>
     state.watch.length > 0 && state.watch.some((w) => haystack(o).includes(fold(w)));
 
+  const reCache = new Map();
+  function boundaryRe(term) {
+    let re = reCache.get(term);
+    if (!re) {
+      const e = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      // Matches when the term starts a word or ends one.
+      re = new RegExp(`(?:^|[^a-z0-9])${e}|${e}(?:$|[^a-z0-9])`);
+      reCache.set(term, re);
+    }
+    return re;
+  }
+
+  // 2 = every term sits on a word boundary ("cola" in "Coca-Cola")
+  // 1 = every term is present, but buried inside a word. German compounds
+  //     need this ("schoko" inside "Tafelschokolade"), but it is also how
+  //     "cola" finds "chocolat", so these rank below the clean matches.
+  // 0 = not a match
+  function relevance(o, terms) {
+    if (!terms.length) return 2;
+    const h = haystack(o);
+    let best = 2;
+    for (const t of terms) {
+      if (!h.includes(t)) return 0;
+      if (!boundaryRe(t).test(h)) best = 1;
+    }
+    return best;
+  }
+
   function validity(o) {
     if (!o.valid_to) return "";
     const end = new Date(o.valid_to + "T23:59:59");
@@ -69,16 +97,17 @@
   function filtered() {
     const q = fold(state.search.trim());
     const terms = q ? q.split(/\s+/) : [];
-    return state.offers.filter((o) => {
-      if (state.retailers.size && !state.retailers.has(o.retailer)) return false;
-      if (state.categories.size && !state.categories.has(o.category)) return false;
-      if (state.onlyBig && (o.discount_pct || 0) < 30) return false;
-      if (terms.length) {
-        const h = haystack(o);
-        if (!terms.every((t) => h.includes(t))) return false;
-      }
-      return true;
-    });
+    const out = [];
+    for (const o of state.offers) {
+      if (state.retailers.size && !state.retailers.has(o.retailer)) continue;
+      if (state.categories.size && !state.categories.has(o.category)) continue;
+      if (state.onlyBig && (o.discount_pct || 0) < 30) continue;
+      const score = relevance(o, terms);
+      if (!score) continue;
+      o._score = score;
+      out.push(o);
+    }
+    return out;
   }
 
   const SORTS = {
@@ -126,7 +155,10 @@
   }
 
   function renderGrid() {
-    const rows = filtered().sort(SORTS[state.sort] || SORTS.discount);
+    const order = SORTS[state.sort] || SORTS.discount;
+    // Clean matches come first; the chosen sort applies inside each group, so
+    // a search never hides a result, it just ranks the obvious ones on top.
+    const rows = filtered().sort((a, b) => (b._score - a._score) || order(a, b));
     const slice = rows.slice(0, state.shown);
 
     $("grid").innerHTML = slice.map(cardHTML).join("");
