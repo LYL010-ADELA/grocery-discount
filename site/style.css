@@ -45,6 +45,11 @@
 
 * { box-sizing: border-box; }
 
+/* The UA rule for [hidden] is display:none, but any author `display` rule
+   beats it — `.more { display: block }` was leaving the button on screen with
+   hidden=true. Make the attribute win everywhere. */
+[hidden] { display: none !important; }
+
 body {
   margin: 0;
   background: var(--bg);
@@ -127,6 +132,12 @@ body {
   border: 1px solid var(--accent); border-radius: 999px;
   padding: 3px 6px 3px 10px; font-size: 12.5px; font-weight: 600;
 }
+.tag-n {
+  background: var(--accent); color: var(--surface);
+  border-radius: 999px; padding: 0 6px; font-size: 11px; font-weight: 700;
+}
+.tag.is-cold { background: var(--surface-2); color: var(--text-dim); border-color: var(--border); }
+.tag.is-cold .tag-n { background: var(--border); color: var(--text-dim); }
 .tag button {
   background: none; border: 0; color: inherit; cursor: pointer;
   font-size: 14px; line-height: 1; padding: 0 2px; opacity: .75;
@@ -212,17 +223,19 @@ input:focus-visible, select:focus-visible, button:focus-visible {
 .card-media img { width: 100%; height: 100%; object-fit: contain; }
 .card-media .placeholder { font-size: 34px; opacity: .3; }
 .card-media .placeholder[hidden] { display: none; }
-/* the glyph sits behind the image so a transparent PNG still looks intentional */
+/* Stacking inside the media box: glyph (0) < image (1) < badges (2). The
+   badges must stay on top or a full-bleed photo hides the discount, which is
+   the one number the card exists to show. */
 .card-media img { position: relative; z-index: 1; }
 
 .pct {
-  position: absolute; top: 8px; left: 8px;
+  position: absolute; top: 8px; left: 8px; z-index: 2;
   background: var(--deal); color: #fff;
   font-size: 13px; font-weight: 700; border-radius: 7px; padding: 3px 7px;
   letter-spacing: -.01em;
 }
 .store-tag {
-  position: absolute; top: 8px; right: 8px;
+  position: absolute; top: 8px; right: 8px; z-index: 2;
   background: var(--surface); color: var(--text); border: 1px solid var(--border);
   font-size: 11px; font-weight: 650; border-radius: 6px; padding: 2px 6px;
 }

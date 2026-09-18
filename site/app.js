@@ -183,22 +183,37 @@
     build($("category-chips"), state.meta.categories, counts("category"), state.categories);
   }
 
+  const countFor = (kw) => {
+    const needle = fold(kw);
+    return state.offers.reduce((n, o) => n + (haystack(o).includes(needle) ? 1 : 0), 0);
+  };
+
   function renderWatch() {
-    $("watch-tags").innerHTML = state.watch.map((w) =>
-      `<span class="tag">${esc(w)}<button type="button" data-kw="${esc(w)}"
-        aria-label="Remove ${esc(w)}">×</button></span>`).join("");
+    // The per-keyword count is the point of the panel: it answers "is the
+    // stuff I always buy on sale this week?" without searching one by one.
+    $("watch-tags").innerHTML = state.watch.map((w) => {
+      const n = countFor(w);
+      return `<span class="tag${n ? "" : " is-cold"}">${esc(w)}
+        <span class="tag-n">${n || "none"}</span>
+        <button type="button" data-kw="${esc(w)}"
+          aria-label="Stop watching ${esc(w)}">×</button></span>`;
+    }).join("");
 
     const hits = $("watch-hits");
     if (!state.watch.length) {
-      hits.innerHTML = `<p class="watch-empty">Add a keyword and any matching deal
-        gets highlighted and listed here.</p>`;
+      hits.innerHTML = `<p class="watch-empty">Save the things you buy every week
+        — <em>Lachs</em>, <em>Kaffee</em>, <em>WC-Papier</em>. They stay saved, so each
+        time you open this page you can see at a glance which of them are on offer.</p>`;
       return;
     }
     const matches = state.offers.filter(watchHits)
       .sort((a, b) => (b.discount_pct || 0) - (a.discount_pct || 0));
     hits.innerHTML = matches.length
-      ? `<div class="grid">${matches.slice(0, 12).map(cardHTML).join("")}</div>`
-      : `<p class="watch-empty">Nothing on offer for those keywords this week.</p>`;
+      ? `<div class="grid">${matches.slice(0, 12).map(cardHTML).join("")}</div>` +
+        (matches.length > 12
+          ? `<p class="watch-empty">+ ${matches.length - 12} more, highlighted below.</p>`
+          : "")
+      : `<p class="watch-empty">None of your keywords are on offer this week.</p>`;
   }
 
   function renderAll() {
